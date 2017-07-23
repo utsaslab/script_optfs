@@ -1,5 +1,4 @@
 # Script_Optfs #
-Authors: Tom Gong and Subrat Mainali
 ### What is Script_Optfs? ###
 Script_Optfs is a conversion tool, capable of converting libraries that use `fsync` pessimistically to be compatible with the Optimistic File System ([OptFS](https://github.com/utsaslab/optfs)). 
 OptFS is a linux-ext4 variant that implements [Optimistic Crash Consistency](http://research.cs.wisc.edu/adsl/Publications/optfs-sosp13.pdf) which essentially makes the same level of guarantee as Pessimistic Crash Consistency (`fsync()` after every write) with sometimes the same speed as Probabilistic Crash Consistency (never calling `fsync()`).
@@ -23,7 +22,7 @@ That's it!
 Download the` OptFS VM`: [Link to VM](http://pages.cs.wisc.edu/~vijayc/optfs-vm.tar.gz).
 It's already setup, so you just need to install the dependencies for the covnerted library, compile it, and then benchmark it to observe the performance difference.
 
-By Subrat Mainali and Tom Gong, undergrads at UT Austin.
+By Subrat Mainali and Tom Gong, undergrads at UT Austin.Authors: Tom Gong and Subrat Mainali
 
 ### Overview of the Tool ###
 This tool makes multiple parses of the library directory (pull request with imporevement welcome).
@@ -99,3 +98,6 @@ void dsync_foo(x) { /* this dsync definition is not correct */
 ```
 In this case, our code doesn't work for the case where `x = 0`.
 We have noticed that in most cases libraries tend not to use this kind of code, so it should work well in most cases.
+### Authors ###
+Tom Gong (tom.gong@utexas.edu) and Subrat Mainali (mainali.subrat@utexas.edu)
+Under [Dr. Vijay Chidambram](http://www.cs.utexas.edu/~vijay/), UT Austin.
