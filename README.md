@@ -12,7 +12,7 @@ The only dependency for this script besides `Python2.7` is `LLVM` with clang bin
 1. Run the following script after fixing the path, if necessary, to [Install Ninja](https://github.com/JDevlieghere/dotfiles/blob/master/installers/ninja.sh)
 1. Then, run this script to actually get the `LLVM` source code. [LLVM](https://github.com/JDevlieghere/dotfiles/blob/master/installers/llvm.sh)
 
-#### Running the Script ####
+#### Running the Script_Optfs ####
 1. Go to the script source, `script.py`, and then modify the `set_library_path` variable to your path to LLVM's `/build/lib`.
 Once that is done, you might need to set an environmental variable, if the compiler throws you an error, otherwise, you are done and the script can be run.
 1. To run the script, you just type `python script.py /path/to/library` and the script should run and modify everything in a new directory `<library_name>_`.
