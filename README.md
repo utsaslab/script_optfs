@@ -96,7 +96,7 @@ function osync_foo(fd1, fd2, expression) {      /* this definition is correct */
   }
  }
  
-function dsync_foo(fd1, fd2, expression) {      /* thsi definition isn't corrrect */
+function dsync_foo(fd1, fd2, expression) {      /* this definition isn't corrrect */
 switch (expression) {
   case 1:
     osync(fd1);                      
@@ -106,7 +106,7 @@ switch (expression) {
    break;                         /* same in this case, dsync definitions should call dsync before they return */
   default:
     osync(fd1);
-    dsync(fd2);                   /* only in this case will dsync actually ever be invoked */
+    dsync(fd2);                   /* only in this case will dsync actually be invoked before the function returns */
   }
  }
 ```
