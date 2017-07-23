@@ -1,9 +1,9 @@
-# Script_Optfs #
-### What is Script_Optfs? ###
-Script_Optfs is a conversion tool, capable of converting libraries that use `fsync` pessimistically to be compatible with the Optimistic File System ([OptFS](https://github.com/utsaslab/optfs)). 
+# AutoOsync #
+### What is AutoOsync? ###
+AutoOsync is a conversion tool, capable of converting libraries that use `fsync` pessimistically to be compatible with the Optimistic File System ([OptFS](https://github.com/utsaslab/optfs)). 
 OptFS is a linux-ext4 variant that implements [Optimistic Crash Consistency](http://research.cs.wisc.edu/adsl/Publications/optfs-sosp13.pdf) which essentially makes the same level of guarantee as Pessimistic Crash Consistency (`fsync()` after every write) with sometimes the same speed as Probabilistic Crash Consistency (never calling `fsync()`).
 
-This means that you can easily speed up the writes in your program by switching to OptFS and running Script_Optfs on the libraries that are in charge of persistence.
+This means that you can easily speed up the writes in your program by switching to OptFS and running AutoOsync on the libraries that are in charge of persistence.
 
 ### Getting Setup ###
 #### Script Dependencies ####
@@ -12,7 +12,7 @@ The only dependency for this script besides `Python2.7` is `LLVM` with clang bin
 1. Run the following script after fixing the path, if necessary, to [Install Ninja](https://github.com/JDevlieghere/dotfiles/blob/master/installers/ninja.sh)
 1. Then, run this script to actually get the `LLVM` source code. [LLVM](https://github.com/JDevlieghere/dotfiles/blob/master/installers/llvm.sh)
 
-#### Running the Script_Optfs ####
+#### Running the AutoOsync ####
 1. Go to the script source, `script.py`, and then modify the `set_library_path` variable to your path to LLVM's `/build/lib`.
 Once that is done, you might need to set an environmental variable, if the compiler throws you an error, otherwise, you are done and the script can be run.
 1. To run the script, you just type `python script.py /path/to/library` and the script should run and modify everything in a new directory `<library_name>_`.
@@ -61,7 +61,7 @@ void dsync_foo() {
 
 ```
 3. Special case of `fsync`: Since `fsync` is an `fsync_wrapper` too, it must get its own version of osync definition and dsync definition. And it does! The osync definition of `fsync` is called `osync` and it's a system call that guarantees order and eventual durability. The dsync definition of `fsync` is called `dsync` and it's a system call that guaratess immediate durability (blocks). For more details, check the Optimistic Crash Cosnsistency paper linked above.
-### Safety of the Script_Optfs ###
+### Safety of the AutoOsync ###
 The script is safe in most cases, but there certainly are cases we don't account for.
 This script can deal with scope, so you can have functions with the same name in multiple files, as long as more than one of those functions doesn't have external linkage, our script will take care it. We went through great lengths to ensure that.
 However, cases where a switch statement is used, like the following:
@@ -101,15 +101,18 @@ switch (expression) {
   case 1:
     osync(fd1);                      
     break;                        /* this function is a dsync definition, yet it doesn't ever call dsync if case 1 is called */
+    
   case 2:
    osync(fd2);
    break;                         /* same in this case, dsync definitions should call dsync before they return */
+ 
   default:
     osync(fd1);
     dsync(fd2);                   /* only in this case will dsync actually be invoked before the function returns */
   }
  }
 ```
+So in this case, the dsync definition doesn't actually invariably call dsync, although that is the expected behavior.
 ### Authors ###
 Tom Gong (tom.gong@utexas.edu) and Subrat Mainali (mainali.subrat@utexas.edu)
 
