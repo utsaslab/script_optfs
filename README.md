@@ -18,7 +18,7 @@ Once that is done, you might need to set an environmental variable, if the compi
 1. To run the script, you just type `python script.py /path/to/library` and the script should run and modify everything in a new directory `<library_name>_`.
 That's it!
 
-#### Setting Up a VM ####
+#### Run the Converted Library ####
 Download the` OptFS VM`: [Link to VM](http://pages.cs.wisc.edu/~vijayc/optfs-vm.tar.gz).
 It's already setup, so you just need to install the dependencies for the covnerted library, compile it, and then benchmark it to observe the performance difference.
 
