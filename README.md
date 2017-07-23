@@ -22,8 +22,6 @@ That's it!
 Download the` OptFS VM`: [Link to VM](http://pages.cs.wisc.edu/~vijayc/optfs-vm.tar.gz).
 It's already setup, so you just need to install the dependencies for the covnerted library, compile it, and then benchmark it to observe the performance difference.
 
-By Subrat Mainali and Tom Gong, undergrads at UT Austin.Authors: Tom Gong and Subrat Mainali
-
 ### Overview of the Tool ###
 This tool makes multiple parses of the library directory (pull request with imporevement welcome).
 In every parse, it tries to determine a function that is an `fsync_wrapper`, a function that is either `fsync` or eventually calls `fsync`, by parsing down the AST nodes.
