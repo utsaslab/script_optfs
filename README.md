@@ -62,42 +62,54 @@ void dsync_foo() {
 ```
 3. Special case of `fsync`: Since `fsync` is an `fsync_wrapper` too, it must get its own version of osync definition and dsync definition. And it does! The osync definition of `fsync` is called `osync` and it's a system call that guarantees order and eventual durability. The dsync definition of `fsync` is called `dsync` and it's a system call that guaratess immediate durability (blocks). For more details, check the Optimistic Crash Cosnsistency paper linked above.
 ### Safety of the Script_Optfs ###
-Optfs needs some improvements in cases of conditionals, as it is possible to compromise program correctness if an `fsync_wrapper` is called inside a conditional. Consider the following case:
+The script is safe in most cases, but there certainly are cases we don't account for.
+This script can deal with scope, so you can have functions with the same name in multiple files, as long as more than one of those functions doesn't have external linkage, our script will take care it. We went through great lengths to ensure that.
+However, cases where a switch statement is used, like the following:
 ```C
-void foo(x) {
-  bar1();
-  if (x == 0) {
-    bar1();
+function foo(fd1, fd2, expression) {
+  switch (expression) {
+    case 1:
+      fsync(fd1);
+      break;
+    case 2:
+     fsync(fd2);
+     break;
+    default:
+      fsync(fd1);
+      fsync(fd2);
   }
-  else {
-    bar1();
-  }
-}
+ }
 ```
-This would get converted to:
+would get converted to the following:
 ```C
-void osync_foo(x) {  /* this osync definition is correct */
-  osync_bar1();
-  if (x == 0) {
-    osync_bar1();
+function osync_foo(fd1, fd2, expression) {      /* this definition is correct */
+  switch (expression) {
+    case 1:
+      osync(fd1);
+      break;
+    case 2:
+     osync(fd2);
+     break;
+    default:
+      osync(fd1);
+      osync(fd2);
   }
-  else {
-    osync_bar1();
+ }
+ 
+function dsync_foo(fd1, fd2, expression) {      /* thsi definition isn't corrrect */
+switch (expression) {
+  case 1:
+    osync(fd1);                      
+    break;                        /* this function is a dsync definition, yet it doesn't ever call dsync if case 1 is called */
+  case 2:
+   osync(fd2);
+   break;                         /* same in this case, dsync definitions should call dsync before they return */
+  default:
+    osync(fd1);
+    dsync(fd2);                   /* only in this case will dsync actually ever be invoked */
   }
-}
-
-void dsync_foo(x) { /* this dsync definition is not correct */
-  osync_bar1();
-  if (x == 0) {
-    osync_bar1();
-  }
-  else {
-    dsync_bar1();
-  }
-}
+ }
 ```
-In this case, our code doesn't work for the case where `x = 0`.
-We have noticed that in most cases libraries tend not to use this kind of code, so it should work well in most cases.
 ### Authors ###
 Tom Gong (tom.gong@utexas.edu) and Subrat Mainali (mainali.subrat@utexas.edu)
 Under [Dr. Vijay Chidambram](http://www.cs.utexas.edu/~vijay/), UT Austin.
