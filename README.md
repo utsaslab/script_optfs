@@ -112,4 +112,5 @@ switch (expression) {
 ```
 ### Authors ###
 Tom Gong (tom.gong@utexas.edu) and Subrat Mainali (mainali.subrat@utexas.edu)
+
 Under [Dr. Vijay Chidambram](http://www.cs.utexas.edu/~vijay/), UT Austin.
