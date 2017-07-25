@@ -64,7 +64,7 @@ The script is safe in most cases, but there certainly are cases we don't account
 This script can deal with scope, so you can have functions with the same name in multiple files, as long as more than one of those functions doesn't have external linkage, our script will take care it. We went through great lengths to ensure that.
 However, cases where a switch statement is used, like the following:
 ```C
-function foo(fd1, fd2, expression) {
+void foo(fd1, fd2, expression) {
   switch (expression) {
     case 1:
       fsync(fd1);
@@ -80,7 +80,7 @@ function foo(fd1, fd2, expression) {
 ```
 would get converted to the following:
 ```C
-function osync_foo(fd1, fd2, expression) {      /* this definition is correct */
+void osync_foo(fd1, fd2, expression) {      /* this definition is correct */
   switch (expression) {
     case 1:
       osync(fd1);
@@ -93,8 +93,8 @@ function osync_foo(fd1, fd2, expression) {      /* this definition is correct */
       osync(fd2);
   }
  }
- 
-function dsync_foo(fd1, fd2, expression) {      /* this definition isn't corrrect */
+
+void dsync_foo(fd1, fd2, expression) {      /* this definition isn't corrrect */
 switch (expression) {
   case 1:
     osync(fd1);                      
